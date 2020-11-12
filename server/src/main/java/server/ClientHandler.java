@@ -23,7 +23,9 @@ public class ClientHandler {
             out = new DataOutputStream(socket.getOutputStream());
             System.out.println("Client connected " + socket.getRemoteSocketAddress());
 
-            new Thread(() -> {
+            //запускаем поток в пуле потоков
+            server.getService().execute(() ->
+            {
                 try {
                     socket.setSoTimeout(120000);
 
@@ -125,11 +127,12 @@ public class ClientHandler {
                         socket.close();
                         in.close();
                         out.close();
+                        server.getService().shutdown(); //вырубаем поток в пуле
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-            }).start();
+            });
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -5,10 +5,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
+    private static int COUNT_OF_THREADS = 10;
     private List<ClientHandler> clients;
     private AuthService authService;
+    private ExecutorService service = Executors.newFixedThreadPool(COUNT_OF_THREADS);
+
+    public ExecutorService getService() {
+        return service;
+    }
 
     public Server() {
         clients = new CopyOnWriteArrayList<>();
@@ -55,7 +63,7 @@ public class Server {
         for (ClientHandler c : clients) {
             c.sendMsg(message);
             //==============//
-            SQLHandler.addMessage(sender.getNickname(),"null",msg,"once upon a time");
+            SQLHandler.addMessage(sender.getNickname(), "null", msg, "once upon a time");
             //==============//
         }
     }
@@ -66,7 +74,7 @@ public class Server {
             if (c.getNickname().equals(receiver)) {
                 c.sendMsg(message);
                 //==============//
-                SQLHandler.addMessage(sender.getNickname(),receiver,msg,"once upon a time");
+                SQLHandler.addMessage(sender.getNickname(), receiver, msg, "once upon a time");
                 //==============//
                 if (!sender.getNickname().equals(receiver)) {
                     sender.sendMsg(message);
